@@ -95,7 +95,7 @@ module_item = _{
 
 // External functions
 extern_block   = { "extern" ~ "{" ~ extern_fn_decl* ~ "}" }
-extern_fn_decl = { visibility? ~ "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ ";" }
+extern_fn_decl = { visibility? ~ "fn" ~ ident ~ "(" ~ param_list? ~ ")" }
 
 // Parameters
 param_list = { param ~ ("," ~ param)* }
