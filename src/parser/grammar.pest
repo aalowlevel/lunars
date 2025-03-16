@@ -1,0 +1,57 @@
+// Grammar for Lunars (revised to eliminate left recursion)
+WHITESPACE = _{ " " | "\t" | NEWLINE }
+COMMENT    = _{ "//" ~ (!"\n" ~ ANY)* }
+
+// Identifiers and literals
+ident   = @{ ASCII_ALPHA ~ ASCII_ALPHANUMERIC* }
+number  = @{ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? }
+string  =  { "\"" ~ ("\\\"" | !"\"" ~ ANY)* ~ "\"" }
+boolean =  { "true" | "false" }
+nil     =  { "nil" }
+
+// Expression structure using Pratt parsing approach
+expr    =  { term ~ (infix_op ~ term)* }
+term    =  { prefix_op* ~ primary }
+primary = _{
+    number
+  | string
+  | boolean
+  | nil
+  | list
+  | dict
+  | func_call
+  | ident
+  | "(" ~ expr ~ ")"
+}
+
+// Operators
+infix_op  = _{ add_op | mul_op | cmp_op | eq_op }
+add_op    =  { "+" | "-" }
+mul_op    =  { "*" | "/" }
+cmp_op    =  { ">" | "<" | ">=" | "<=" }
+eq_op     =  { "==" | "!=" }
+prefix_op =  { "-" | "!" }
+
+// Assignment (no longer part of expr to avoid recursion)
+assign = { ident ~ "=" ~ expr }
+
+// Function calls
+func_call = { ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
+
+// Data structures
+list      = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
+dict      = { "{" ~ (dict_pair ~ ("," ~ dict_pair)*)? ~ "}" }
+dict_pair = { (ident | string) ~ ":" ~ expr }
+
+// Statements
+stmt    = { assign | expr | if_stmt | while_loop | func_def }
+program = { SOI ~ stmt* ~ EOI }
+
+// Control flow
+if_stmt    = {
+    "if" ~ expr ~ "{" ~ stmt* ~ "}" ~ ("else" ~ "{" ~ stmt* ~ "}")?
+}
+while_loop = { "while" ~ expr ~ "{" ~ stmt* ~ "}" }
+
+// Functions
+func_def = { "fn" ~ ident ~ "(" ~ (ident ~ ("," ~ ident)*)? ~ ")" ~ "{" ~ stmt* ~ "}" }
