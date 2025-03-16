@@ -9,18 +9,7 @@ homepage = "https://github.com/aalowlevel/lunars"
 repository = "https://github.com/aalowlevel/lunars"
 documentation = "https://docs.rs/lunars"
 readme = "README.md"
-keywords = [
-    "scripting",
-    "spaceship",
-    "satellite",
-    "lua",
-    "wasm",
-    "blazingly-fast",
-    "lightweight",
-    "zero-gravity-overhead",
-    "ferris-approved",
-    "ferris-in-space",
-]
+keywords = ["scripting", "lua", "wasm", "blazingly-fast", "lightweight"]
 categories = ["scripting", "webassembly", "embedded", "no-std"]
 
 
