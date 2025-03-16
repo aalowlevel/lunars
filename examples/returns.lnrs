@@ -1,0 +1,17 @@
+// Function with early return
+fn check_positive(x) {
+    if x < 0 {
+        return false  // Early return
+    }
+    true  // Implicit return
+}
+
+// Function with implicit return
+fn square(x) {
+    x * x
+}
+
+// Test returns
+print("check_positive(10) =", check_positive(10))
+print("check_positive(-5) =", check_positive(-5))
+print("square(4) =", square(4))

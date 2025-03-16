@@ -1,0 +1,11 @@
+// Lists
+list = [1, 2, "three"]
+print("list =", list)
+
+// Dicts
+dict = { name: "Alice", age: 30 }
+print("dict =", dict)
+
+// Access elements
+print("list[0] =", list[0])
+print("dict['name'] =", dict["name"])

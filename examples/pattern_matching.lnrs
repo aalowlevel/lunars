@@ -1,0 +1,30 @@
+// Match on numbers
+fn describe(x) {
+    match x {
+        1 => "one",
+        2 => "two",
+        _ => "something else",
+    }
+}
+
+// Match on lists
+fn head(list) {
+    match list {
+        [head, ..] => head,
+        _ => null,
+    }
+}
+
+// Match on dicts
+fn greet(person) {
+    match person {
+        { name: "Alice" } => "Hello, Alice!",
+        { name: "Bob" } => "Hi, Bob!",
+        _ => "Hello, stranger!",
+    }
+}
+
+// Test pattern matching
+print("describe(2) =", describe(2))
+print("head([1, 2, 3]) =", head([1, 2, 3]))
+print("greet({ name: 'Alice' }) =", greet({ name: "Alice" }))

@@ -1,0 +1,15 @@
+// Define a module
+mod math {
+    pub fn add(a, b) {
+        a + b
+    }
+
+    fn sub(a, b) {
+        a - b
+    }
+}
+
+// Import and use module
+use math::add
+result = add(3, 4)
+print("add(3, 4) =", result)

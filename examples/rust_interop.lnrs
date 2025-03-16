@@ -1,0 +1,8 @@
+// Declare external Rust function
+extern {
+    fn rust_mul(a, b)
+}
+
+// Call Rust function
+product = rust_mul(3, 4)
+print("rust_mul(3, 4) =", product)

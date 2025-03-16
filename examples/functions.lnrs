@@ -1,0 +1,19 @@
+// Function with implicit return
+fn add(a, b) {
+    a + b
+}
+
+// Function with early return
+fn sub(a, b) {
+    if a < b {
+        return null  // Early return
+    }
+    a - b  // Implicit return
+}
+
+// Function calls
+result1 = add(3, 4)
+result2 = sub(10, 5)
+
+print("add(3, 4) =", result1)
+print("sub(10, 5) =", result2)

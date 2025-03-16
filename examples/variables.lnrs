@@ -1,0 +1,14 @@
+// Implicit variable declaration
+x = 10
+y = "hello"
+z = true
+
+// Reassignment
+x = x + 5
+y = y + " world"
+z = !z
+
+// Print values
+print("x =", x)
+print("y =", y)
+print("z =", z)

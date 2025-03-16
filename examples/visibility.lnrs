@@ -1,0 +1,17 @@
+// Define a module with public and private functions
+mod utils {
+    pub fn public_fn() {
+        print("This is a public function")
+    }
+
+    fn private_fn() {
+        print("This is a private function")
+    }
+}
+
+// Use public function
+use utils::public_fn
+public_fn()
+
+// Private function is inaccessible
+// utils::private_fn()  // This would cause an error
