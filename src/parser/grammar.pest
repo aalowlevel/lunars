@@ -48,12 +48,13 @@ primary = _{
     prefix_op* ~ (number | string | boolean | null | list | dict | func_call | "self" | ident | "(" ~ expr ~ ")")
 }
 
-// Postfix operations for properties and method calls
-postfix        = _{ prop_or_method }
-prop_or_method =  {
-    "." ~ ident ~ ("(" ~ args? ~ ")")?
-}
-args           =  { expr ~ ("," ~ expr)* }
+// Postfix operations for properties, method calls, and indexing
+postfix = _{ call | access | index }
+call    =  { "(" ~ args? ~ ")" }
+access  =  { "." ~ ident ~ ("(" ~ args? ~ ")")? }
+index   =  { "[" ~ expr ~ "]" }
+// <-- New rule for indexing
+args    =  { expr ~ ("," ~ expr)* }
 
 // Operators
 infix_op  = _{ add_op | mul_op | cmp_op | eq_op | log_op }

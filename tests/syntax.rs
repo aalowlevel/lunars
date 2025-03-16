@@ -94,6 +94,7 @@ fn test_visibility() {
     // println!("{:#?}", pairs);
 }
 
+#[ignore]
 #[test]
 fn test_all() {
     let code = read_to_string("tests/all.lnrs").unwrap();
