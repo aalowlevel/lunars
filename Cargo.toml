@@ -1,6 +1,30 @@
 [package]
+description = "A compact, WASM-ready spaceship — fueled by Rust-grade hyperdrive! Write scripts that orbit Lua in speed and dock seamlessly with Rust. Smaller than a satellite, built for intergalactic-scale scripting."
 name = "lunars"
 version = "0.1.0"
 edition = "2024"
+authors = ["Andy Allison <rustacean15@gmail.com>"]
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/aalowlevel/lunars"
+repository = "https://github.com/aalowlevel/lunars"
+documentation = "https://docs.rs/lunars"
+readme = "README.md"
+keywords = [
+    "scripting",
+    "spaceship",
+    "satellite",
+    "lua",
+    "wasm",
+    "blazingly-fast",
+    "lightweight",
+    "zero-gravity-overhead",
+    "ferris-approved",
+    "ferris-in-space",
+]
+categories = ["scripting", "webassembly", "embedded", "no-std"]
+
+
+[lib]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
