@@ -27,6 +27,7 @@ keyword = @{
   | "extern"
   | "match"
   | "self"
+  | "mod" // Added mod keyword for module support
 }
 
 // Reserved keywords (for future use)
@@ -84,6 +85,14 @@ dict_method =  { "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ block }
 // Visibility for exports
 visibility = { "pub" }
 
+// Module definition (new) with optional pub visibility
+module_def  =  { visibility? ~ "mod" ~ ident ~ "{" ~ module_item* ~ "}" }
+module_item = _{
+    func_def
+  | extern_block
+  | module_def // Allow nested modules
+}
+
 // External functions
 extern_block   = { "extern" ~ "{" ~ extern_fn_decl* ~ "}" }
 extern_fn_decl = { visibility? ~ "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ ";" }
@@ -107,6 +116,7 @@ stmt    = {
   | continue_stmt
   | use_stmt
   | match_stmt
+  | module_def // Added module definition
 }
 program = { SOI ~ stmt* ~ EOI }
 
