@@ -17,3 +17,14 @@ result2 = sub(10, 5)
 
 print("add(3, 4) =", result1)
 print("sub(10, 5) =", result2)
+
+// Dict with methods
+counter = {
+    count: 0,
+    fn increment() {
+        self.count = self.count + 1
+    }
+}
+
+counter.increment()
+print("counter.count =", counter.count)  // Output: 1

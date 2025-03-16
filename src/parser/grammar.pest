@@ -25,13 +25,13 @@ keyword = @{
   | "continue"
   | "pub"
   | "extern"
-  | "match" // Added for pattern matching
+  | "match"
+  | "self" // Added for method support
 }
 
 // Reserved keywords (for future use)
 keyword_reserved = @{
-    "self"
-  | "super"
+    "super"
   | "let"
   | "type"
   | "trait"
@@ -77,9 +77,11 @@ func_call   = { ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 method_call = { "." ~ ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 
 // Data structures (simple Lua-like tables with Rust-like syntax)
-list      = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
-dict      = { "{" ~ (dict_pair ~ ("," ~ dict_pair)*)? ~ "}" }
-dict_pair = { (ident | string | "[" ~ expr ~ "]") ~ ":" ~ expr }
+list        = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
+dict        = { "{" ~ (dict_pair | dict_method)* ~ "}" }
+dict_pair   = { (ident | string | "[" ~ expr ~ "]") ~ ":" ~ expr }
+dict_method = { "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ block }
+// Added for methods
 
 // Visibility for Rust-like module exports
 visibility = { "pub" }
@@ -107,7 +109,7 @@ stmt    = {
   | break_stmt
   | continue_stmt
   | use_stmt
-  | match_stmt // Added for pattern matching
+  | match_stmt
 }
 program = { SOI ~ stmt* ~ EOI }
 

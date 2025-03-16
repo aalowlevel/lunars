@@ -1,3 +1,15 @@
+// Dict with methods
+person = {
+    name: "Alice",
+    age: 30,
+    fn greet() {
+        print("Hello, my name is", self.name)
+    }
+}
+
+// Call method
+person.greet()  // Output: Hello, my name is Alice
+
 // Lists
 list = [1, 2, "three"]
 print("list =", list)
