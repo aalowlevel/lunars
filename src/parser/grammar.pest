@@ -26,7 +26,7 @@ keyword = @{
   | "pub"
   | "extern"
   | "match"
-  | "self" // Added for method support
+  | "self"
 }
 
 // Reserved keywords (for future use)
@@ -40,27 +40,21 @@ keyword_reserved = @{
   | "await"
 }
 
-// Expression structure using Pratt parsing approach (familiar to Rust devs)
-expr = { term ~ (infix_op ~ term)* }
-term = { prefix_op* ~ atom ~ postfix* }
-
-// Atom is the basic, non-recursive expression
-atom = _{
-    number
-  | string
-  | boolean
-  | null
-  | list
-  | dict
-  | func_call
-  | ident
-  | "(" ~ expr ~ ")"
+// Expression structure using Pratt parsing approach
+expr    =  { term ~ (infix_op ~ term)* }
+term    =  { primary ~ postfix* }
+primary = _{
+    prefix_op* ~ (number | string | boolean | null | list | dict | func_call | "self" | ident | "(" ~ expr ~ ")")
 }
 
-// Postfix operations (method calls)
-postfix = _{ method_call }
+// Postfix operations for properties and method calls
+postfix        = _{ prop_or_method }
+prop_or_method =  {
+    "." ~ ident ~ ("(" ~ args? ~ ")")?
+}
+args           =  { expr ~ ("," ~ expr)* }
 
-// Operators (subset that's common between Lua and Rust)
+// Operators
 infix_op  = _{ add_op | mul_op | cmp_op | eq_op | log_op }
 add_op    =  { "+" | "-" }
 mul_op    =  { "*" | "/" | "%" }
@@ -69,37 +63,34 @@ eq_op     =  { "==" | "!=" }
 log_op    =  { "&&" | "||" }
 prefix_op =  { "-" | "!" }
 
-// Assignment (implicit variable declaration, like Lua)
-assign = { ident ~ "=" ~ expr }
+// Assignment
+assign = { lvalue ~ "=" ~ expr }
+lvalue = { (ident | "self") ~ ("." ~ ident)* }
 
-// Function calls and method calls
-func_call   = { ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
-method_call = { "." ~ ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
+// Function calls
+func_call = { ident ~ "(" ~ args? ~ ")" }
 
-// Data structures (simple Lua-like tables with Rust-like syntax)
+// Data structures
 list = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
 dict = {
-    "{" ~  // Allow comma-separated entries with optional trailing comma
-  (dict_entry ~ ("," ~ dict_entry)* ~ ","?)? ~ "}"
+    "{" ~ (dict_entry ~ ("," ~ dict_entry)* ~ ","?)? ~ "}"
 }
 
-// Unified dict entry (pair or method)
+// Dict entries
 dict_entry  = _{ dict_pair | dict_method }
 dict_pair   =  { (ident | string | "[" ~ expr ~ "]") ~ ":" ~ expr }
 dict_method =  { "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ block }
-// Added for methods
 
-// Visibility for Rust-like module exports
+// Visibility for exports
 visibility = { "pub" }
 
-// External functions (for zero-cost Rust/WASM interop)
+// External functions
 extern_block   = { "extern" ~ "{" ~ extern_fn_decl* ~ "}" }
 extern_fn_decl = { visibility? ~ "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ ";" }
 
 // Parameters
 param_list = { param ~ ("," ~ param)* }
 param      = { ident }
-// No type annotations (dynamic typing)
 
 // Statements
 stmt    = {
@@ -119,11 +110,10 @@ stmt    = {
 }
 program = { SOI ~ stmt* ~ EOI }
 
-// Control flow - Rust-like but with minimal syntax
+// Control flow
 if_stmt      = { "if" ~ expr ~ block ~ (else_if_stmt)* ~ ("else" ~ block)? }
 else_if_stmt = { "else" ~ "if" ~ expr ~ block }
-// Simplified
-block = { "{" ~ stmt* ~ "}" }
+block        = { "{" ~ stmt* ~ "}" }
 
 while_loop = { "while" ~ expr ~ block }
 for_loop   = { "for" ~ ident ~ "in" ~ expr ~ block }
@@ -134,21 +124,19 @@ return_stmt   = { "return" ~ expr? }
 break_stmt    = { "break" }
 continue_stmt = { "continue" }
 
-// Functions (Rust-like but without type annotations for simplicity)
+// Functions
 func_def = { visibility? ~ "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ block }
 
-// Modules (Rust-like)
+// Modules
 use_stmt    = { "use" ~ module_path }
 module_path = { ident ~ ("::" ~ ident)* ~ ("::" ~ "{" ~ ident ~ ("," ~ ident)* ~ "}")? }
 
-// Pattern matching (Rust-inspired but simplified)
+// Pattern matching
 match_stmt = { "match" ~ expr ~ "{" ~ match_arm* ~ "}" }
 match_arm  = { pattern ~ "=>" ~ (block | expr) ~ ","? }
 pattern    = {
-    "_" // Wildcard
-
-  | ident // Variable binding
-
+    "_"
+  | ident
   | number
   | string
   | boolean
