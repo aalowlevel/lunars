@@ -7,7 +7,9 @@ COMMENT    = _{ "//" ~ (!"\n" ~ ANY)* }
 ///
 // Literals and Identifiers    //
 ///
-ident   = @{ !(keyword | keyword_reserved) ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+ident   = @{
+    !((keyword | keyword_reserved) ~ (EOI | !(ASCII_ALPHANUMERIC | "_"))) ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")*
+}
 number  = @{ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? }
 string  =  { "\"" ~ ("\\\"" | !"\"" ~ ANY)* ~ "\"" }
 boolean =  { "true" | "false" }
