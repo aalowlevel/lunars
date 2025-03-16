@@ -93,3 +93,13 @@ fn test_visibility() {
     // Uncomment to print parsed results
     // println!("{:#?}", pairs);
 }
+
+#[test]
+fn test_all() {
+    let code = read_to_string("tests/all.lnrs").unwrap();
+    let pairs = LunarsParser::parse(Rule::program, &code);
+    assert!(pairs.is_ok(), "Failed to parse all.lnrs");
+
+    // Uncomment to print parsed results
+    // println!("{:#?}", pairs);
+}

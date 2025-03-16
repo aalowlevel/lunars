@@ -1,0 +1,183 @@
+// If-else
+x = 10
+if x > 5 {
+    print("x is greater than 5")
+} else if x == 5 {
+    print("x is 5")
+} else {
+    print("x is less than 5")
+}
+
+// While loop
+y = 3
+while y > 0 {
+    print("y =", y)
+    y = y - 1
+}
+
+// For loop
+for i in [1, 2, 3] {
+    print("i =", i)
+}
+
+// Dict with methods
+person = {
+    name: "Alice",
+    age: 30,
+    fn greet() {
+        print("Hello, my name is", self.name)
+    }
+}
+
+// Call method
+person.greet()  // Output: Hello, my name is Alice
+
+// Lists
+list = [1, 2, "three"]
+print("list =", list)
+
+// Dicts
+dict = { name: "Alice", age: 30 }
+print("dict =", dict)
+
+// Access elements
+print("list[0] =", list[0])
+print("dict['name'] =", dict["name"])
+
+// Function with implicit return
+fn add(a, b) {
+    a + b
+}
+
+// Function with early return
+fn sub(a, b) {
+    if a < b {
+        return null  // Early return
+    }
+    a - b  // Implicit return
+}
+
+// Function calls
+result1 = add(3, 4)
+result2 = sub(10, 5)
+
+print("add(3, 4) =", result1)
+print("sub(10, 5) =", result2)
+
+// Dict with methods
+counter = {
+    count: 0,
+    fn increment() {
+        self.count = self.count + 1
+    }
+}
+
+counter.increment()
+print("counter.count =", counter.count)  // Output: 1
+
+// Define a module
+mod math {
+    pub fn add(a, b) {
+        a + b
+    }
+
+    fn sub(a, b) {
+        a - b
+    }
+}
+
+// Import and use module
+use math::add
+result = add(3, 4)
+print("add(3, 4) =", result)
+
+// Match on numbers
+fn describe(x) {
+    match x {
+        1 => "one",
+        2 => "two",
+        _ => "something else",
+    }
+}
+
+// Match on lists
+fn head(list) {
+    match list {
+        [head, ..] => head,
+        _ => null,
+    }
+}
+
+// Match on dicts
+fn greet(person) {
+    match person {
+        { name: "Alice" } => "Hello, Alice!",
+        { name: "Bob" } => "Hi, Bob!",
+        _ => "Hello, stranger!",
+    }
+}
+
+// Test pattern matching
+print("describe(2) =", describe(2))
+print("head([1, 2, 3]) =", head([1, 2, 3]))
+print("greet({ name: 'Alice' }) =", greet({ name: "Alice" }))
+
+// Function with early return
+fn check_positive(x) {
+    if x < 0 {
+        return false  // Early return
+    }
+    true  // Implicit return
+}
+
+// Function with implicit return
+fn square(x) {
+    x * x
+}
+
+// Test returns
+print("check_positive(10) =", check_positive(10))
+print("check_positive(-5) =", check_positive(-5))
+print("square(4) =", square(4))
+
+// Declare external Rust function
+extern {
+    fn rust_mul(a, b)
+}
+
+// Call Rust function
+product = rust_mul(3, 4)
+print("rust_mul(3, 4) =", product)
+
+// Implicit variable declaration
+x = 10
+y = "hello"
+z = true
+
+// Reassignment
+x = x + 5
+y = y + " world"
+z = !z
+
+// Print values
+print("x =", x)
+print("y =", y)
+print("z =", z)
+
+// Define a module with public and private functions
+mod utils {
+    pub fn public_fn() {
+        print("This is a public function")
+    }
+
+    fn private_fn() {
+        print("This is a private function")
+    }
+}
+
+// Use public function
+use utils::public_fn
+public_fn()
+
+// Private function is inaccessible
+// utils::private_fn()  // This would cause an error
