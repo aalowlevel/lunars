@@ -2,13 +2,13 @@ WHITESPACE = _{ " " | "\t" | NEWLINE }
 COMMENT    = _{ "//" ~ (!"\n" ~ ANY)* }
 
 // Identifiers and literals
-ident   = @{ !keyword ~ ASCII_ALPHA ~ ASCII_ALPHANUMERIC* }
+ident   = @{ !(keyword | keyword_reserved) ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 number  = @{ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? }
 string  =  { "\"" ~ ("\\\"" | !"\"" ~ ANY)* ~ "\"" }
 boolean =  { "true" | "false" }
 null    =  { "null" }
 
-// Keywords
+// Keywords - keeping minimal set for simplicity
 keyword = @{
     "fn"
   | "if"
@@ -20,14 +20,27 @@ keyword = @{
   | "false"
   | "null"
   | "use"
-  | "as"
   | "return"
   | "break"
   | "continue"
   | "pub"
+  | "extern"
+  | "match" // Added for pattern matching
 }
 
-// Expression structure using Pratt parsing approach
+// Reserved keywords (for future use)
+keyword_reserved = @{
+    "self"
+  | "super"
+  | "let"
+  | "type"
+  | "trait"
+  | "impl"
+  | "async"
+  | "await"
+}
+
+// Expression structure using Pratt parsing approach (familiar to Rust devs)
 expr = { term ~ (infix_op ~ term)* }
 term = { prefix_op* ~ atom ~ postfix* }
 
@@ -47,28 +60,38 @@ atom = _{
 // Postfix operations (method calls)
 postfix = _{ method_call }
 
-// Operators
-infix_op  = _{ add_op | mul_op | cmp_op | eq_op }
+// Operators (subset that's common between Lua and Rust)
+infix_op  = _{ add_op | mul_op | cmp_op | eq_op | log_op }
 add_op    =  { "+" | "-" }
-mul_op    =  { "*" | "/" }
+mul_op    =  { "*" | "/" | "%" }
 cmp_op    =  { ">" | "<" | ">=" | "<=" }
 eq_op     =  { "==" | "!=" }
+log_op    =  { "&&" | "||" }
 prefix_op =  { "-" | "!" }
 
-// Visibility modifier
-visibility = { "pub" }
-
-// Assignment (no longer part of expr to avoid recursion)
-assign = { visibility? ~ ident ~ "=" ~ expr }
+// Assignment (implicit variable declaration, like Lua)
+assign = { ident ~ "=" ~ expr }
 
 // Function calls and method calls
 func_call   = { ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 method_call = { "." ~ ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 
-// Data structures
+// Data structures (simple Lua-like tables with Rust-like syntax)
 list      = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
 dict      = { "{" ~ (dict_pair ~ ("," ~ dict_pair)*)? ~ "}" }
-dict_pair = { (ident | string) ~ ":" ~ expr }
+dict_pair = { (ident | string | "[" ~ expr ~ "]") ~ ":" ~ expr }
+
+// Visibility for Rust-like module exports
+visibility = { "pub" }
+
+// External functions (for zero-cost Rust/WASM interop)
+extern_block   = { "extern" ~ "{" ~ extern_fn_decl* ~ "}" }
+extern_fn_decl = { visibility? ~ "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ ";" }
+
+// Parameters
+param_list = { param ~ ("," ~ param)* }
+param      = { ident }
+// No type annotations (dynamic typing)
 
 // Statements
 stmt    = {
@@ -79,30 +102,53 @@ stmt    = {
   | for_loop
   | loop_stmt
   | func_def
+  | extern_block
   | return_stmt
   | break_stmt
   | continue_stmt
   | use_stmt
+  | match_stmt // Added for pattern matching
 }
 program = { SOI ~ stmt* ~ EOI }
 
-// Control flow
-if_stmt      = {
-    "if" ~ expr ~ "{" ~ stmt* ~ "}" ~ (else_if_stmt)* ~ ("else" ~ "{" ~ stmt* ~ "}")?
-}
-else_if_stmt = { "else" ~ "if" ~ expr ~ "{" ~ stmt* ~ "}" }
-while_loop   = { "while" ~ expr ~ "{" ~ stmt* ~ "}" }
-for_loop     = { "for" ~ ident ~ "in" ~ expr ~ "{" ~ stmt* ~ "}" }
-loop_stmt    = { "loop" ~ "{" ~ stmt* ~ "}" }
+// Control flow - Rust-like but with minimal syntax
+if_stmt      = { "if" ~ expr ~ block ~ (else_if_stmt)* ~ ("else" ~ block)? }
+else_if_stmt = { "else" ~ "if" ~ expr ~ block }
+// Simplified
+block        = { "{" ~ stmt* ~ "}" }
+
+while_loop = { "while" ~ expr ~ block }
+for_loop   = { "for" ~ ident ~ "in" ~ expr ~ block }
+loop_stmt  = { "loop" ~ block }
 
 // Function control
 return_stmt   = { "return" ~ expr? }
 break_stmt    = { "break" }
 continue_stmt = { "continue" }
 
-// Functions
-func_def = { visibility? ~ "fn" ~ ident ~ "(" ~ (ident ~ ("," ~ ident)*)? ~ ")" ~ "{" ~ stmt* ~ "}" }
+// Functions (Rust-like but without type annotations for simplicity)
+func_def = { visibility? ~ "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ block }
 
-// Modules
-use_stmt    = { "use" ~ module_path ~ ("as" ~ ident)? }
-module_path = { ident ~ ("::" ~ ident)* }
+// Modules (Rust-like)
+use_stmt    = { "use" ~ module_path }
+module_path = { ident ~ ("::" ~ ident)* ~ ("::" ~ "{" ~ ident ~ ("," ~ ident)* ~ "}")? }
+
+// Pattern matching (Rust-inspired but simplified)
+match_stmt = { "match" ~ expr ~ "{" ~ match_arm* ~ "}" }
+match_arm  = { pattern ~ "=>" ~ (block | expr) ~ ","? }
+pattern    = {
+    "_" // Wildcard
+
+  | ident // Variable binding
+
+  | number
+  | string
+  | boolean
+  | null
+  | list_pattern
+  | dict_pattern
+}
+
+list_pattern      = { "[" ~ (pattern ~ ("," ~ pattern)*)? ~ "]" }
+dict_pattern      = { "{" ~ (dict_pair_pattern ~ ("," ~ dict_pair_pattern)*)? ~ "}" }
+dict_pair_pattern = { (ident | string | "[" ~ expr ~ "]") ~ ":" ~ pattern }
