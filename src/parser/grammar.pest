@@ -1,28 +1,51 @@
-// Grammar for Lunars (revised to eliminate left recursion)
 WHITESPACE = _{ " " | "\t" | NEWLINE }
 COMMENT    = _{ "//" ~ (!"\n" ~ ANY)* }
 
 // Identifiers and literals
-ident   = @{ ASCII_ALPHA ~ ASCII_ALPHANUMERIC* }
+ident   = @{ !keyword ~ ASCII_ALPHA ~ ASCII_ALPHANUMERIC* }
 number  = @{ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? }
 string  =  { "\"" ~ ("\\\"" | !"\"" ~ ANY)* ~ "\"" }
 boolean =  { "true" | "false" }
-nil     =  { "nil" }
+null    =  { "null" }
+
+// Keywords
+keyword = @{
+    "fn"
+  | "if"
+  | "else"
+  | "while"
+  | "for"
+  | "loop"
+  | "true"
+  | "false"
+  | "null"
+  | "use"
+  | "as"
+  | "return"
+  | "break"
+  | "continue"
+  | "pub"
+}
 
 // Expression structure using Pratt parsing approach
-expr    =  { term ~ (infix_op ~ term)* }
-term    =  { prefix_op* ~ primary }
-primary = _{
+expr = { term ~ (infix_op ~ term)* }
+term = { prefix_op* ~ atom ~ postfix* }
+
+// Atom is the basic, non-recursive expression
+atom = _{
     number
   | string
   | boolean
-  | nil
+  | null
   | list
   | dict
   | func_call
   | ident
   | "(" ~ expr ~ ")"
 }
+
+// Postfix operations (method calls)
+postfix = _{ method_call }
 
 // Operators
 infix_op  = _{ add_op | mul_op | cmp_op | eq_op }
@@ -32,11 +55,15 @@ cmp_op    =  { ">" | "<" | ">=" | "<=" }
 eq_op     =  { "==" | "!=" }
 prefix_op =  { "-" | "!" }
 
-// Assignment (no longer part of expr to avoid recursion)
-assign = { ident ~ "=" ~ expr }
+// Visibility modifier
+visibility = { "pub" }
 
-// Function calls
-func_call = { ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
+// Assignment (no longer part of expr to avoid recursion)
+assign = { visibility? ~ ident ~ "=" ~ expr }
+
+// Function calls and method calls
+func_call   = { ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
+method_call = { "." ~ ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 
 // Data structures
 list      = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
@@ -44,14 +71,38 @@ dict      = { "{" ~ (dict_pair ~ ("," ~ dict_pair)*)? ~ "}" }
 dict_pair = { (ident | string) ~ ":" ~ expr }
 
 // Statements
-stmt    = { assign | expr | if_stmt | while_loop | func_def }
+stmt    = {
+    assign
+  | expr
+  | if_stmt
+  | while_loop
+  | for_loop
+  | loop_stmt
+  | func_def
+  | return_stmt
+  | break_stmt
+  | continue_stmt
+  | use_stmt
+}
 program = { SOI ~ stmt* ~ EOI }
 
 // Control flow
-if_stmt    = {
-    "if" ~ expr ~ "{" ~ stmt* ~ "}" ~ ("else" ~ "{" ~ stmt* ~ "}")?
+if_stmt      = {
+    "if" ~ expr ~ "{" ~ stmt* ~ "}" ~ (else_if_stmt)* ~ ("else" ~ "{" ~ stmt* ~ "}")?
 }
-while_loop = { "while" ~ expr ~ "{" ~ stmt* ~ "}" }
+else_if_stmt = { "else" ~ "if" ~ expr ~ "{" ~ stmt* ~ "}" }
+while_loop   = { "while" ~ expr ~ "{" ~ stmt* ~ "}" }
+for_loop     = { "for" ~ ident ~ "in" ~ expr ~ "{" ~ stmt* ~ "}" }
+loop_stmt    = { "loop" ~ "{" ~ stmt* ~ "}" }
+
+// Function control
+return_stmt   = { "return" ~ expr? }
+break_stmt    = { "break" }
+continue_stmt = { "continue" }
 
 // Functions
-func_def = { "fn" ~ ident ~ "(" ~ (ident ~ ("," ~ ident)*)? ~ ")" ~ "{" ~ stmt* ~ "}" }
+func_def = { visibility? ~ "fn" ~ ident ~ "(" ~ (ident ~ ("," ~ ident)*)? ~ ")" ~ "{" ~ stmt* ~ "}" }
+
+// Modules
+use_stmt    = { "use" ~ module_path ~ ("as" ~ ident)? }
+module_path = { ident ~ ("::" ~ ident)* }
