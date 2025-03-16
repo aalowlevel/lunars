@@ -155,6 +155,8 @@ pattern    = {
   | dict_pattern
 }
 
-list_pattern      = { "[" ~ (pattern ~ ("," ~ pattern)*)? ~ "]" }
+list_pattern      = {
+    "[" ~ ((pattern ~ ("," ~ pattern)* ~ ("," ~ ".." ~ ident?)?) | (".." ~ ident?))? ~ "]"
+}
 dict_pattern      = { "{" ~ (dict_pair_pattern ~ ("," ~ dict_pair_pattern)*)? ~ "}" }
 dict_pair_pattern = { (ident | string | "[" ~ expr ~ "]") ~ ":" ~ pattern }
