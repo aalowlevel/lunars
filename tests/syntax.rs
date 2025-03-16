@@ -1,10 +1,12 @@
+use std::fs::read_to_string;
+
 use lunars::parser::LunarsParser;
 use lunars::parser::Rule;
 use pest::Parser;
 
 #[test]
 fn test_control_flow() {
-    let code = std::fs::read_to_string("tests/control_flow.lnrs").unwrap();
+    let code = read_to_string("tests/control_flow.lnrs").unwrap();
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse control_flow.lnrs");
 
@@ -14,7 +16,7 @@ fn test_control_flow() {
 
 #[test]
 fn test_data_structures() {
-    let code = std::fs::read_to_string("tests/data_structures.lnrs").unwrap();
+    let code = read_to_string("tests/data_structures.lnrs").unwrap();
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse data_structures.lnrs");
 
@@ -24,7 +26,7 @@ fn test_data_structures() {
 
 #[test]
 fn test_functions() {
-    let code = std::fs::read_to_string("tests/functions.lnrs").unwrap();
+    let code = read_to_string("tests/functions.lnrs").unwrap();
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse functions.lnrs");
 
@@ -34,7 +36,7 @@ fn test_functions() {
 
 #[test]
 fn test_modules() {
-    let code = std::fs::read_to_string("tests/modules.lnrs").unwrap();
+    let code = read_to_string("tests/modules.lnrs").unwrap();
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse modules.lnrs");
 
@@ -44,7 +46,7 @@ fn test_modules() {
 
 #[test]
 fn test_pattern_matching() {
-    let code = std::fs::read_to_string("tests/pattern_matching.lnrs").unwrap();
+    let code = read_to_string("tests/pattern_matching.lnrs").unwrap();
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse pattern_matching.lnrs");
 
@@ -54,7 +56,7 @@ fn test_pattern_matching() {
 
 #[test]
 fn test_returns() {
-    let code = std::fs::read_to_string("tests/returns.lnrs").unwrap();
+    let code = read_to_string("tests/returns.lnrs").unwrap();
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse returns.lnrs");
 
@@ -64,7 +66,7 @@ fn test_returns() {
 
 #[test]
 fn test_rust_interop() {
-    let code = std::fs::read_to_string("tests/rust_interop.lnrs").unwrap();
+    let code = read_to_string("tests/rust_interop.lnrs").unwrap();
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse rust_interop.lnrs");
 
@@ -74,7 +76,7 @@ fn test_rust_interop() {
 
 #[test]
 fn test_variables() {
-    let code = std::fs::read_to_string("tests/variables.lnrs").unwrap();
+    let code = read_to_string("tests/variables.lnrs").unwrap();
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse variables.lnrs");
 
@@ -84,7 +86,7 @@ fn test_variables() {
 
 #[test]
 fn test_visibility() {
-    let code = std::fs::read_to_string("tests/visibility.lnrs").unwrap();
+    let code = read_to_string("tests/visibility.lnrs").unwrap();
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse visibility.lnrs");
 

@@ -77,10 +77,16 @@ func_call   = { ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 method_call = { "." ~ ident ~ "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 
 // Data structures (simple Lua-like tables with Rust-like syntax)
-list        = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
-dict        = { "{" ~ (dict_pair | dict_method)* ~ "}" }
-dict_pair   = { (ident | string | "[" ~ expr ~ "]") ~ ":" ~ expr }
-dict_method = { "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ block }
+list = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
+dict = {
+    "{" ~  // Allow comma-separated entries with optional trailing comma
+  (dict_entry ~ ("," ~ dict_entry)* ~ ","?)? ~ "}"
+}
+
+// Unified dict entry (pair or method)
+dict_entry  = _{ dict_pair | dict_method }
+dict_pair   =  { (ident | string | "[" ~ expr ~ "]") ~ ":" ~ expr }
+dict_method =  { "fn" ~ ident ~ "(" ~ param_list? ~ ")" ~ block }
 // Added for methods
 
 // Visibility for Rust-like module exports
@@ -117,7 +123,7 @@ program = { SOI ~ stmt* ~ EOI }
 if_stmt      = { "if" ~ expr ~ block ~ (else_if_stmt)* ~ ("else" ~ block)? }
 else_if_stmt = { "else" ~ "if" ~ expr ~ block }
 // Simplified
-block        = { "{" ~ stmt* ~ "}" }
+block = { "{" ~ stmt* ~ "}" }
 
 while_loop = { "while" ~ expr ~ block }
 for_loop   = { "for" ~ ident ~ "in" ~ expr ~ block }
