@@ -17,8 +17,8 @@ pub enum Error<'a> {
     AstVariableAssignMissingLValue,
     AstVariableAssignMissingExpression,
 
+    AstLValueInvalidMember,
     AstLValueMissingBase,
-    AstLValueMissingMember,
 
     AstLiteralInvalidNumber,
     AstLiteralUnexpectedRule(Pair<'a, Rule>),

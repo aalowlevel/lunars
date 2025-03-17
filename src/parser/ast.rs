@@ -3,7 +3,7 @@ pub mod functions;
 pub mod variables;
 
 use pest::iterators::{Pair, Pairs};
-use variables::VariableAssign;
+use variables::{Expr, VariableAssign};
 
 use crate::Error;
 
@@ -39,7 +39,7 @@ impl<'a> TryFrom<Pairs<'a, Rule>> for Program {
 #[derive(Debug)]
 pub enum Statement {
     VariableAssign(VariableAssign),
-    Expr(variables::Expr),
+    Expr(Expr),
 }
 
 impl<'a> TryFrom<Pair<'a, Rule>> for Statement {
@@ -49,7 +49,7 @@ impl<'a> TryFrom<Pair<'a, Rule>> for Statement {
         let inner = pair.into_inner().next().ok_or(Error::AstStatementEmpty)?;
         match inner.as_rule() {
             Rule::assign => Ok(Self::VariableAssign(VariableAssign::try_from(inner)?)),
-            Rule::expr => Ok(Self::Expr(variables::Expr::try_from(inner)?)),
+            Rule::expr => Ok(Self::Expr(Expr::try_from(inner)?)),
             _ => Err(Error::AstStatementUnexpectedRule),
         }
     }

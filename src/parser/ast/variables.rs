@@ -37,24 +37,26 @@ impl<'a> TryFrom<Pair<'a, Rule>> for LValue {
     type Error = Error<'a>;
 
     fn try_from(pair: Pair<'a, Rule>) -> Result<Self, Self::Error> {
-        if pair.as_rule() == Rule::ident {
+        if pair.as_rule() == Rule::ident || pair.as_str() == "self" {
             return Ok(Self::Identifier(pair.as_str().to_string()));
         }
 
         let mut pairs = pair.into_inner();
-        let base = Box::new(
-            pairs
-                .next()
-                .ok_or(Error::AstLValueMissingBase)?
-                .try_into()?,
-        );
-        let member = pairs
-            .next()
-            .ok_or(Error::AstLValueMissingMember)?
-            .as_str()
-            .to_string();
+        let mut current = LValue::try_from(pairs.next().ok_or(Error::AstLValueMissingBase)?)?;
 
-        Ok(Self::MemberAccess { base, member })
+        for member_pair in pairs {
+            let member_str = member_pair.as_str();
+            let member = member_str
+                .strip_prefix('.')
+                .ok_or(Error::AstLValueInvalidMember)?
+                .to_string();
+            current = LValue::MemberAccess {
+                base: Box::new(current),
+                member,
+            };
+        }
+
+        Ok(current)
     }
 }
 
