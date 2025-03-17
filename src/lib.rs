@@ -5,5 +5,16 @@ pub mod vm;
 
 #[derive(Debug)]
 pub enum Error {
-    ParseError,
+    AstProgramUnexpectedRule,
+
+    AstStatementUnexpectedRule,
+
+    AstVariableAssignMissingLValue,
+    AstVariableAssignMissingExpression,
+
+    AstLValueMissingBase,
+    AstLValueMissingMember,
+
+    AstLiteralInvalidNumber,
+    AstLiteralUnexpectedRule,
 }

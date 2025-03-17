@@ -2,6 +2,7 @@ use std::fs::read_to_string;
 
 use lunars::parser::LunarsParser;
 use lunars::parser::Rule;
+use lunars::parser::ast::Program;
 use pest::Parser;
 
 #[test]
@@ -80,8 +81,9 @@ fn test_variables() {
     let pairs = LunarsParser::parse(Rule::program, &code);
     assert!(pairs.is_ok(), "Failed to parse variables.lnrs");
 
-    // Uncomment to print parsed results
-    // println!("{:#?}", pairs);
+    let program = Program::try_from(pairs.unwrap());
+    dbg!(&program);
+    assert!(program.is_ok(), "Failed to map to AST variables.lnrs");
 }
 
 #[test]
