@@ -8,6 +8,7 @@ pub enum Error {
     AstProgramUnexpectedRule,
 
     AstStatementUnexpectedRule,
+    AstStatementEmpty,
 
     AstVariableAssignMissingLValue,
     AstVariableAssignMissingExpression,

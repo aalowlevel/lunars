@@ -33,14 +33,17 @@ impl TryFrom<Pairs<'_, Rule>> for Program {
 #[derive(Debug)]
 pub enum Statement {
     VariableAssign(VariableAssign),
+    Expr(variables::Expr),
 }
 
 impl TryFrom<Pair<'_, Rule>> for Statement {
     type Error = Error;
 
     fn try_from(pair: Pair<Rule>) -> Result<Self, Self::Error> {
-        match pair.as_rule() {
-            Rule::assign => Ok(Statement::VariableAssign(VariableAssign::try_from(pair)?)),
+        let inner = pair.into_inner().next().ok_or(Error::AstStatementEmpty)?;
+        match inner.as_rule() {
+            Rule::assign => Ok(Self::VariableAssign(VariableAssign::try_from(inner)?)),
+            Rule::expr => Ok(Self::Expr(variables::Expr::try_from(inner)?)),
             _ => Err(Error::AstStatementUnexpectedRule),
         }
     }
