@@ -8,6 +8,7 @@ pub mod vm;
 
 #[derive(Debug)]
 pub enum Error<'a> {
+    AstProgramAsLast,
     AstProgramUnexpectedRule(Pair<'a, Rule>),
 
     AstStatementEmpty,

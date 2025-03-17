@@ -18,11 +18,16 @@ impl<'a> TryFrom<Pairs<'a, Rule>> for Program {
     type Error = Error<'a>;
 
     fn try_from(pairs: Pairs<'a, Rule>) -> Result<Self, Self::Error> {
+        let Some(program) = pairs.last() else {
+            return Err(Error::AstProgramAsLast);
+        };
+
         let mut statements = vec![];
 
-        for pair in pairs {
+        for pair in program.into_inner() {
             match pair.as_rule() {
                 Rule::stmt => statements.push(Statement::try_from(pair)?),
+                Rule::EOI => {} // Explicitly handle EOI rule
                 _ => return Err(Error::AstProgramUnexpectedRule(pair)),
             }
         }
