@@ -13,7 +13,7 @@ pub enum Literal {
 impl<'a> TryFrom<Pair<'a, Rule>> for Literal {
     type Error = Error<'a>;
 
-    fn try_from(pair: Pair<Rule>) -> Result<Self, Self::Error> {
+    fn try_from(pair: Pair<'a, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
             Rule::number => {
                 let num_str = pair.as_str();
@@ -32,7 +32,7 @@ impl<'a> TryFrom<Pair<'a, Rule>> for Literal {
                 _ => Err(Error::AstLiteralInvalidNumber),
             },
             Rule::null => Ok(Literal::Null),
-            _ => Err(Error::AstLiteralUnexpectedRule),
+            _ => Err(Error::AstLiteralUnexpectedRule(pair)),
         }
     }
 }

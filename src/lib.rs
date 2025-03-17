@@ -1,5 +1,5 @@
 use parser::Rule;
-use pest::iterators::Pairs;
+use pest::iterators::Pair;
 
 pub mod compiler;
 pub mod ffi;
@@ -8,10 +8,10 @@ pub mod vm;
 
 #[derive(Debug)]
 pub enum Error<'a> {
-    AstProgramUnexpectedRule(Pairs<'a, Rule>),
+    AstProgramUnexpectedRule(Pair<'a, Rule>),
 
-    AstStatementUnexpectedRule,
     AstStatementEmpty,
+    AstStatementUnexpectedRule,
 
     AstVariableAssignMissingLValue,
     AstVariableAssignMissingExpression,
@@ -20,7 +20,7 @@ pub enum Error<'a> {
     AstLValueMissingMember,
 
     AstLiteralInvalidNumber,
-    AstLiteralUnexpectedRule,
+    AstLiteralUnexpectedRule(Pair<'a, Rule>),
 
     AstFunctionCallMissingName,
 }

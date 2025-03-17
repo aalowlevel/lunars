@@ -23,7 +23,7 @@ impl<'a> TryFrom<Pairs<'a, Rule>> for Program {
         for pair in pairs {
             match pair.as_rule() {
                 Rule::stmt => statements.push(Statement::try_from(pair)?),
-                _ => return Err(Error::AstProgramUnexpectedRule(pairs)),
+                _ => return Err(Error::AstProgramUnexpectedRule(pair)),
             }
         }
 
