@@ -1,4 +1,5 @@
 pub mod data_structures;
+pub mod functions;
 pub mod variables;
 
 use pest::iterators::{Pair, Pairs};
@@ -13,16 +14,16 @@ pub struct Program {
     pub statements: Vec<Statement>,
 }
 
-impl TryFrom<Pairs<'_, Rule>> for Program {
-    type Error = Error;
+impl<'a> TryFrom<Pairs<'a, Rule>> for Program {
+    type Error = Error<'a>;
 
-    fn try_from(pairs: Pairs<Rule>) -> Result<Self, Self::Error> {
+    fn try_from(pairs: Pairs<'a, Rule>) -> Result<Self, Self::Error> {
         let mut statements = vec![];
 
         for pair in pairs {
             match pair.as_rule() {
                 Rule::stmt => statements.push(Statement::try_from(pair)?),
-                _ => return Err(Error::AstProgramUnexpectedRule),
+                _ => return Err(Error::AstProgramUnexpectedRule(pairs)),
             }
         }
 
@@ -36,10 +37,10 @@ pub enum Statement {
     Expr(variables::Expr),
 }
 
-impl TryFrom<Pair<'_, Rule>> for Statement {
-    type Error = Error;
+impl<'a> TryFrom<Pair<'a, Rule>> for Statement {
+    type Error = Error<'a>;
 
-    fn try_from(pair: Pair<Rule>) -> Result<Self, Self::Error> {
+    fn try_from(pair: Pair<'a, Rule>) -> Result<Self, Self::Error> {
         let inner = pair.into_inner().next().ok_or(Error::AstStatementEmpty)?;
         match inner.as_rule() {
             Rule::assign => Ok(Self::VariableAssign(VariableAssign::try_from(inner)?)),

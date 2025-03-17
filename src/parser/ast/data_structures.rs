@@ -10,8 +10,8 @@ pub enum Literal {
     Null,
 }
 
-impl TryFrom<Pair<'_, Rule>> for Literal {
-    type Error = Error;
+impl<'a> TryFrom<Pair<'a, Rule>> for Literal {
+    type Error = Error<'a>;
 
     fn try_from(pair: Pair<Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {

@@ -1,5 +1,5 @@
 // --- ast/variables.rs
-use super::data_structures::Literal;
+use super::{data_structures::Literal, functions::FunctionCall};
 use crate::{Error, parser::Rule};
 use pest::iterators::Pair;
 
@@ -9,10 +9,10 @@ pub struct VariableAssign {
     pub value: Expr,
 }
 
-impl TryFrom<Pair<'_, Rule>> for VariableAssign {
-    type Error = Error;
+impl<'a> TryFrom<Pair<'a, Rule>> for VariableAssign {
+    type Error = Error<'a>;
 
-    fn try_from(pair: Pair<Rule>) -> Result<Self, Self::Error> {
+    fn try_from(pair: Pair<'a, Rule>) -> Result<Self, Self::Error> {
         let mut pairs = pair.into_inner();
         let target = pairs
             .next()
@@ -33,10 +33,10 @@ pub enum LValue {
     MemberAccess { base: Box<LValue>, member: String },
 }
 
-impl TryFrom<Pair<'_, Rule>> for LValue {
-    type Error = Error;
+impl<'a> TryFrom<Pair<'a, Rule>> for LValue {
+    type Error = Error<'a>;
 
-    fn try_from(pair: Pair<Rule>) -> Result<Self, Self::Error> {
+    fn try_from(pair: Pair<'a, Rule>) -> Result<Self, Self::Error> {
         if pair.as_rule() == Rule::ident {
             return Ok(Self::Identifier(pair.as_str().to_string()));
         }
@@ -62,18 +62,20 @@ impl TryFrom<Pair<'_, Rule>> for LValue {
 pub enum Expr {
     Ident(String),
     Literal(Literal),
+    FunctionCall(FunctionCall),
     Unimplemented(String),
 }
 
-impl TryFrom<Pair<'_, Rule>> for Expr {
-    type Error = Error;
+impl<'a> TryFrom<Pair<'a, Rule>> for Expr {
+    type Error = Error<'a>;
 
-    fn try_from(pair: Pair<Rule>) -> Result<Self, Self::Error> {
+    fn try_from(pair: Pair<'a, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
             Rule::ident => Ok(Self::Ident(pair.as_str().to_string())),
             Rule::number | Rule::string | Rule::boolean | Rule::null => {
                 Ok(Self::Literal(pair.try_into()?))
             }
+            Rule::func_call => Ok(Self::FunctionCall(pair.try_into()?)),
             _ => Ok(Self::Unimplemented(format!("{:?}", pair.as_rule()))),
         }
     }
