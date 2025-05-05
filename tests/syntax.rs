@@ -82,7 +82,6 @@ fn test_variables() {
     assert!(pairs.is_ok(), "Failed to parse variables.lnrs");
 
     let program = Program::try_from(pairs.unwrap());
-    dbg!(&program);
     assert!(program.is_ok(), "Failed to map to AST variables.lnrs");
 }
 
