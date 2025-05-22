@@ -17,8 +17,8 @@ pub struct Program {
 impl<'a> TryFrom<Pairs<'a, Rule>> for Program {
     type Error = Error<'a>;
 
-    fn try_from(pairs: Pairs<'a, Rule>) -> Result<Self, Self::Error> {
-        let Some(program) = pairs.last() else {
+    fn try_from(mut pairs: Pairs<'a, Rule>) -> Result<Self, Self::Error> {
+        let Some(program) = pairs.next_back() else {
             return Err(Error::AstProgramAsLast);
         };
 
