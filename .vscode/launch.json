@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug integration test 'syntax' in 'lunars'",
+      "cargo": {
+        "args": ["test", "--no-run", "--lib", "--test", "syntax"],
+        "filter": {
+          "name": "syntax",
+          "kind": "test"
+        }
+      },
+      "args": ["--show-output", "${input:filterTest}"],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
